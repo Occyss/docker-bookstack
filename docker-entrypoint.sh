@@ -136,6 +136,7 @@ EOF
 fi
 
 if [ ! -f "certs/sp-cert.pem" ]; then
+  mkdir -p /var/www/html/vendor/onelogin/php-saml/certs
   cp certs/sp-cert.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-cert.pem
   cp certs/sp-key.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-key.pem
 fi
