@@ -135,11 +135,10 @@ EOF
   openssl req -new -x509 -config ./certs/bookstack.${WIKI_NAME}.cnf -text -out ./certs/sp-cert.pem -days 3650
 fi
 
-if [ ! -f "certs/sp-cert.pem" ]; then
-  mkdir -p /var/www/html/vendor/onelogin/php-saml/certs
-  cp certs/sp-cert.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-cert.pem
-  cp certs/sp-key.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-key.pem
-fi
+mkdir -p /var/www/html/vendor/onelogin/php-saml/certs
+cp certs/sp-cert.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-cert.pem
+cp certs/sp-key.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-key.pem
+
 
 echoerr "wait-for-db: waiting for ${DB_HOST_NAME}:${DB_PORT}"
 
