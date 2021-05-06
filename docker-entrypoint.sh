@@ -133,6 +133,8 @@ if [ ! -f "certs/bookstack.${WIKI_NAME}.cnf" ]; then
 EOF
   echo "Generate SAML Certs"
   openssl req -new -x509 -config certs/bookstack.${WIKI_NAME}.cnf -text -out certs/sp-cert.pem -days 3650
+  ln certs/sp-cert.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-cert.pem
+  ln certs/sp-key.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-key.pem
 fi
 
 echoerr "wait-for-db: waiting for ${DB_HOST_NAME}:${DB_PORT}"
