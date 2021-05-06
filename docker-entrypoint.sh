@@ -44,7 +44,7 @@ if [ ! -f ".env" ]; then
 
       # Storage
       STORAGE_TYPE=${STORAGE_TYPE:-local}
-      STORAGE_TYPE=${STORAGE_TYPE:-local}
+      STORAGE_IMAGE_TYPE=${STORAGE_TYPE:-local}
       # Amazon S3 Config
       STORAGE_S3_KEY=${STORAGE_S3_KEY:-false}
       STORAGE_S3_SECRET=${STORAGE_S3_SECRET:-false}
@@ -121,7 +121,7 @@ if [ ! -f "certs/bookstack.${WIKI_NAME}.cnf" ]; then
     x509_extensions=ext
 
     # customize the "default_keyfile,", "CN" and "subjectAltName" lines below
-    default_keyfile=sp-key.pem
+    default_keyfile=certs/sp-key.pem
 
     [dn]
     CN=${WIKI_NAME}.${DOMAIN_NAME}
