@@ -28,6 +28,9 @@ if [ ! -f ".env" ]; then
       # Cache and session
       CACHE_DRIVER=file
       SESSION_DRIVER=file
+      SESSION_LIFETIME=${SESSION_LIFETIME:-600}
+      SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME:-bookstack_session}
+      SESSION_SECURE_COOKIE=${SESSION_SECURE_COOKIE:-true}
       # If using Memcached, comment the above and uncomment these
       #CACHE_DRIVER=memcached
       #SESSION_DRIVER=memcached
@@ -41,6 +44,7 @@ if [ ! -f ".env" ]; then
 
       # Storage
       STORAGE_TYPE=${STORAGE_TYPE:-local}
+      STORAGE_TYPE=${STORAGE_TYPE:-local}
       # Amazon S3 Config
       STORAGE_S3_KEY=${STORAGE_S3_KEY:-false}
       STORAGE_S3_SECRET=${STORAGE_S3_SECRET:-false}
@@ -52,6 +56,22 @@ if [ ! -f ".env" ]; then
 
       # General auth
       AUTH_METHOD=${AUTH_METHOD:-standard}
+
+      # SAML Settings
+      SAML2_NAME=${SAML2_NAME}
+      SAML2_EMAIL_ATTRIBUTE=${SAML2_EMAIL_ATTRIBUTE}
+      SAML2_EXTERNAL_ID_ATTRIBUTE=${SAML2_EXTERNAL_ID_ATTRIBUTE}
+      SAML2_DISPLAY_NAME_ATTRIBUTES=${SAML2_DISPLAY_NAME_ATTRIBUTES}
+      SAML2_IDP_ENTITYID=${SAML2_IDP_ENTITYID}
+      SAML2_AUTOLOAD_METADATA=${SAML2_AUTOLOAD_METADATA:-false}
+      SAML2_IDP_SSO=${SAML2_IDP_SSO}
+      SAML2_IDP_SLO=${SAML2_IDP_SLO}
+      SAML2_IDP_x509=${SAML2_IDP_x509}
+
+      # Groups SAML Settings
+      SAML2_USER_TO_GROUPS=${SAML2_USER_TO_GROUPS:-false}
+      SAML2_GROUP_ATTRIBUTE=${SAML2_GROUP_ATTRIBUTE}
+      SAML2_REMOVE_FROM_GROUPS=${SAML2_REMOVE_FROM_GROUPS:-false}
 
       # Social Authentication information. Defaults as off.
       GITHUB_APP_ID=${GITHUB_APP_ID:-false}
@@ -78,11 +98,41 @@ if [ ! -f ".env" ]; then
       MAIL_PASSWORD=${MAIL_PASSWORD:-null}
       MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-null}
       # URL used for social login redirects, NO TRAILING SLASH
+
 EOF
     else
         echo >&2 'error: missing DB_HOST environment variable'
         exit 1
     fi
+fi
+
+if [ ! -f "certs/bookstack.${WIKI_NAME}.cnf" ]; then
+  mkdir certs
+  cat > "certs/bookstack.${WIKI_NAME}.cnf" <<EOF
+    [req]
+    RANDFILE=/dev/urandom
+    default_bits=3072
+    default_md=sha256
+    encrypt_key=no
+    distinguished_name=dn
+    # PrintableStrings only
+    string_mask=MASK:0002
+    prompt=no
+    x509_extensions=ext
+
+    # customize the "default_keyfile,", "CN" and "subjectAltName" lines below
+    default_keyfile=sp-key.pem
+
+    [dn]
+    CN=${WIKI_NAME}.${DOMAIN_NAME}
+
+    [ext]
+    subjectAltName = DNS:${DOMAIN_NAME}, \
+    URI:https://${WIKI_NAME}.${DOMAIN_NAME}/saml2/metadata
+    subjectKeyIdentifier=hash
+EOF
+  echo "Generate SAML Certs"
+  openssl req -new -x509 -config certs/bookstack.${WIKI_NAME}.cnf -text -out certs/sp-cert.pem -days 3650
 fi
 
 echoerr "wait-for-db: waiting for ${DB_HOST_NAME}:${DB_PORT}"

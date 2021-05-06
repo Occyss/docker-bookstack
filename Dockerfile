@@ -69,7 +69,7 @@ WORKDIR /var/www/bookstack
 # www-data
 USER 33
 
-VOLUME ["/var/www/bookstack/public/uploads","/var/www/bookstack/storage/uploads"]
+VOLUME ["/var/www/bookstack/public/uploads","/var/www/bookstack/storage/uploads","/var/www/html/vendor/onelogin/php-saml/certs"]
 
 ENV RUN_APACHE_USER=www-data \
     RUN_APACHE_GROUP=www-data
@@ -84,8 +84,8 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.docker.dockerfile="/Dockerfile" \
       org.label-schema.license="MIT" \
       org.label-schema.name="bookstack" \
-      org.label-schema.vendor="solidnerd" \
-      org.label-schema.url="https://github.com/solidnerd/docker-bookstack/" \
+      org.label-schema.vendor="occyss" \
+      org.label-schema.url="https://github.com/occyss/docker-bookstack/" \
       org.label-schema.vcs-ref=$VCS_REF \
-      org.label-schema.vcs-url="https://github.com/solidnerd/docker-bookstack.git" \
+      org.label-schema.vcs-url="https://github.com/occyss/docker-bookstack.git" \
       org.label-schema.vcs-type="Git"
