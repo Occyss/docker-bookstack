@@ -136,8 +136,8 @@ EOF
 fi
 
 mkdir -p /var/www/html/vendor/onelogin/php-saml/certs
-cp certs/sp-cert.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-cert.pem
-cp certs/sp-key.pem /var/www/html/vendor/onelogin/php-saml/certs/sp-key.pem
+cp certs/sp-cert.pem /var/www/bookstack/vendor/onelogin/php-saml/certs/sp.crt
+cp certs/sp-key.pem /var/www/bookstack/vendor/onelogin/php-saml/certs/sp.key
 
 
 echoerr "wait-for-db: waiting for ${DB_HOST_NAME}:${DB_PORT}"
