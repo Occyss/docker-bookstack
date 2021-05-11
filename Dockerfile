@@ -44,11 +44,11 @@ RUN a2enmod rewrite remoteip; \
     } > /etc/apache2/conf-available/remoteip.conf; \
     a2enconf remoteip
 
+COPY bookstack.conf /etc/apache2/sites-available/000-default.conf
+
 RUN set -ex; \
     sed -i "s/Listen 80/Listen 8080/" /etc/apache2/ports.conf; \
-    sed -i "s/VirtualHost *:80/VirtualHost *:8080/" /etc/apache2/sites-available/*.conf
-
-COPY bookstack.conf /etc/apache2/sites-available/000-default.conf
+    sed -i "s/VirtualHost *:80/VirtualHost *:8080/" /etc/apache2/sites-available/*.conf 
 
 COPY --from=bookstack --chown=33:33 /bookstack/ /var/www/bookstack/
 
@@ -60,7 +60,8 @@ RUN set -x; \
     && /var/www/bookstack/composer.phar install -v -d /var/www/bookstack/ \
     && /var/www/bookstack/composer.phar global -v remove hirak/prestissimo \
     && rm -rf /var/www/bookstack/composer.phar /root/.composer \
-    && chown -R www-data:www-data /var/www/bookstack
+    && chown -R www-data:www-data /var/www/bookstack \
+    && chown -R www-data:www-data /etc/apache2/sites-available
 
 COPY php.ini /usr/local/etc/php/php.ini
 COPY docker-entrypoint.sh /bin/docker-entrypoint.sh

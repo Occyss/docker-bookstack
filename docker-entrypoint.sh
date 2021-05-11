@@ -7,6 +7,7 @@ echoerr() { echo "$@" 1>&2; }
 IFS=":" read -r DB_HOST_NAME DB_PORT <<< "$DB_HOST"
 DB_PORT=${DB_PORT:-3306}
 
+# create .env file if not there
 if [ ! -f ".env" ]; then
   if [[ "${DB_HOST}" ]]; then
   cat > ".env" <<EOF
@@ -106,6 +107,7 @@ EOF
     fi
 fi
 
+# create cert file if not there
 if [ ! -f "certs/bookstack.${WIKI_NAME}.cnf" ]; then
   mkdir -p certs
   cat > "certs/bookstack.${WIKI_NAME}.cnf" <<EOF
@@ -124,20 +126,24 @@ if [ ! -f "certs/bookstack.${WIKI_NAME}.cnf" ]; then
     default_keyfile=certs/sp-key.pem
 
     [dn]
-    CN=${WIKI_NAME}.${DOMAIN_NAME}
+    CN=${PROXY_NAME}.${DOMAIN_NAME}
 
     [ext]
     subjectAltName = DNS:${DOMAIN_NAME}, \
-    URI:https://${WIKI_NAME}.${DOMAIN_NAME}/saml2/metadata
+    URI:https://${PROXY_NAME}.${DOMAIN_NAME}/${WIKI_NAME}/saml2/metadata
     subjectKeyIdentifier=hash
 EOF
   echo "Generate SAML Certs"
   openssl req -new -x509 -config ./certs/bookstack.${WIKI_NAME}.cnf -text -out ./certs/sp-cert.pem -days 3650
 fi
 
+# copy the cert file form saml auth
 mkdir -p /var/www/html/vendor/onelogin/php-saml/certs
 cp certs/sp-cert.pem /var/www/bookstack/vendor/onelogin/php-saml/certs/sp.crt
 cp certs/sp-key.pem /var/www/bookstack/vendor/onelogin/php-saml/certs/sp.key
+
+# modify the alias in 000-default.conf with the WIKI_NAME
+sed -i "s/WIKI_NAME/${WIKI_NAME}/" /etc/apache2/sites-available/000-default.conf
 
 
 echoerr "wait-for-db: waiting for ${DB_HOST_NAME}:${DB_PORT}"
