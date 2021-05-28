@@ -1,6 +1,6 @@
 ## Docker Image For [BookStack](https://github.com/ssddanbrown/BookStack)
 
-This fork mainly focus to host multiple BookStack Instances on K8s in subdirectories (wiki.example.com/wiki1, wiki.example.com/wiki2, ...) without root privileges
+This fork mainly focus to host multiple BookStack Instances on K8s in subdirectories (example.com/wiki1, example.com/wiki2, ...) without root privileges
 
 ## Current Version: [21.04.5]
 
