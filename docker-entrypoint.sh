@@ -167,7 +167,57 @@ echo "Generating Key..."
 php artisan key:generate --show
 
 echo "Starting Migration..."
+# DB first set up
+if [[ "${DB_INIT}" == true ]]; then
+  echo "Starting Initialisation..."
+  cat > "initdb1.php" <<EOF
+  <?php
+  try {
+    \$conn = new PDO("mysql:host=${DB_HOST_NAME}:${DB_PORT};dbname=${DB_DATABASE}", "${DB_USERNAME}", "${DB_PASSWORD}");
+    // set the PDO error mode to exception
+    \$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    \$sql = "ALTER TABLE pages DROP COLUMN template";
+    // Prepare statement
+    \$stmt = \$conn->prepare(\$sql);
+
+    // execute the query
+    \$stmt->execute();
+
+    // echo a message to say the UPDATE succeeded
+    echo \$stmt->rowCount();
+  } catch(PDOException \$e) {
+    echo \$sql . "<br>" . \$e->getMessage();
+  }
+  \$conn = null;
+  ?>
+EOF
+  cat > "initdb2.php" <<EOF
+  <?php
+  try {
+    \$conn = new PDO("mysql:host=${DB_HOST_NAME}:${DB_PORT};dbname=${DB_DATABASE}", "${DB_USERNAME}", "${DB_PASSWORD}");
+    // set the PDO error mode to exception
+    \$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    \$sql = "ALTER TABLE users DROP COLUMN slug";
+    // Prepare statement
+    \$stmt = \$conn->prepare(\$sql);
+
+    // execute the query
+    \$stmt->execute();
+
+    // echo a message to say the UPDATE succeeded
+    echo \$stmt->rowCount();
+  } catch(PDOException \$e) {
+    echo \$sql . "<br>" . \$e->getMessage();
+  }
+  \$conn = null;
+  ?>
+EOF
+  cat initdb1.php
+  php artisan migrate --force || php initdb1.php
+  php artisan migrate --force || php initdb2.php
+fi
 php artisan migrate --force
+
 
 echo "Clearing caches..."
 php artisan cache:clear
