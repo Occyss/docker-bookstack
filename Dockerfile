@@ -7,7 +7,7 @@ RUN set -x; \
     && tar xvf bookstack.tar.gz -C /bookstack --strip-components=1 \
     && rm bookstack.tar.gz
 
-FROM php:7.4-apache-buster as final
+FROM php:8.1-apache-buster as final
 RUN set -x; \
     apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -52,13 +52,11 @@ RUN set -ex; \
 
 COPY --from=bookstack --chown=33:33 /bookstack/ /var/www/bookstack/
 
-ARG COMPOSER_VERSION=1.10.16
+ARG COMPOSER_VERSION=2.1.12
 RUN set -x; \
     cd /var/www/bookstack \
     && curl -sS https://getcomposer.org/installer | php -- --version=$COMPOSER_VERSION \
-    && /var/www/bookstack/composer.phar global -v require hirak/prestissimo \
     && /var/www/bookstack/composer.phar install -v -d /var/www/bookstack/ \
-    && /var/www/bookstack/composer.phar global -v remove hirak/prestissimo \
     && rm -rf /var/www/bookstack/composer.phar /root/.composer \
     && chown -R www-data:www-data /var/www/bookstack \
     && chown -R www-data:www-data /etc/apache2/sites-available
