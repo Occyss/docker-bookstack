@@ -100,6 +100,13 @@ if [ ! -f ".env" ]; then
       MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-null}
       # URL used for social login redirects, NO TRAILING SLASH
 
+      # Allow <script> tags in page content
+      # Note, if set to 'true' the page editor may still escape scripts.
+      ALLOW_CONTENT_SCRIPTS=${ALLOW_CONTENT_SCRIPTS:-true}
+      
+      # Allow to limit page revision history
+      REVISION_LIMIT=${REVISION_LIMIT:-false}
+
 EOF
     else
         echo >&2 'error: missing DB_HOST environment variable'
