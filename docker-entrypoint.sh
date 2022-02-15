@@ -150,7 +150,11 @@ cp certs/sp-cert.pem /var/www/bookstack/vendor/onelogin/php-saml/certs/sp.crt
 cp certs/sp-key.pem /var/www/bookstack/vendor/onelogin/php-saml/certs/sp.key
 
 # modify the alias in 000-default.conf with the WIKI_NAME
-sed -i "s/WIKI_NAME/${WIKI_NAME}/" /etc/apache2/sites-available/000-default.conf
+sed -i "s/WIKI_NAME/${WIKI_NAME}/g" /etc/apache2/sites-available/000-default.conf
+
+# Temp add to resolve the login redirect issue
+sed -i "s/PROXY_NAME/${PROXY_NAME}/g" /etc/apache2/sites-available/000-default.conf
+sed -i "s/DOMAIN_NAME/${DOMAIN_NAME}/g" /etc/apache2/sites-available/000-default.conf
 
 
 echoerr "wait-for-db: waiting for ${DB_HOST_NAME}:${DB_PORT}"
